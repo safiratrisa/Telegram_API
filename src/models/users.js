@@ -35,15 +35,25 @@ const users = {
       })
     })
   },
-  getUsers: (id) => {
+  getUsers: (id, username) => {
     return new Promise((resolve, reject) => {
-      connection.query(`select users.id, users.username, users.images FROM users WHERE NOT (users.id = ? OR users.id = 11)`, id, (error, results) => {
-        if (!error) {
-          resolve(results)
-        } else {
-          reject(error)
-        }
-      })
+      if (username) {
+        connection.query(`select users.id, users.username, users.images FROM users WHERE NOT (users.id = ? OR users.id = 11) AND users.username LIKE ?`, [id, `%${username}%`], (error, results) => {
+          if (!error) {
+            resolve(results)
+          } else {
+            reject(error)
+          }
+        })
+      } else {
+        connection.query(`select users.id, users.username, users.images FROM users WHERE NOT (users.id = ? OR users.id = 11)`, id, (error, results) => {
+          if (!error) {
+            resolve(results)
+          } else {
+            reject(error)
+          }
+        })
+      }
     })
   },
   getReceiverbyid: (id) => {
@@ -59,7 +69,7 @@ const users = {
   },
   getReceiver: (idUser, idReceiver) => {
     return new Promise((resolve, reject) => {
-      connection.query(`select send.id, sender.id AS senderId, sender.username AS sendername, sender.images AS senderimages, receiver.id AS receiverId, receiver.username AS receivername, receiver.phonenumber AS receiverphone, receiver.lat AS receiverlat, receiver.lng AS receiverlng, receiver.images AS receiverimage, send.messagesend, send.datetime, send.time from send LEFT JOIN users AS sender ON send.senderid = sender.id LEFT JOIN users AS receiver ON send.receiverid = receiver.id WHERE (send.senderid = ${idUser} or send.senderid = ${idReceiver}) AND (send.receiverid = ${idReceiver} or send.receiverid = ${idUser}) ORDER BY send.datetime ASC`, (error, results) => {
+      connection.query(`select send.id, sender.id AS senderId, sender.username AS sendername, sender.images AS senderimages, receiver.id AS receiverId, receiver.username AS receivername, receiver.phonenumber AS receiverphone, receiver.lat AS receiverlat, receiver.lng AS receiverlng, receiver.images AS receiverimage, send.messagesend, send.datetime, send.time from send LEFT JOIN users AS sender ON send.senderid = sender.id LEFT JOIN users AS receiver ON send.receiverid = receiver.id WHERE (send.senderid = ? or send.senderid = ?) AND (send.receiverid = ? or send.receiverid = ?) ORDER BY send.datetime ASC`,[idUser,idReceiver,idReceiver,idUser ], (error, results) => {
         if (!error) {
           resolve(results)
         } else {

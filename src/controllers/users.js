@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { insertUsers,checkUser, getUsers, getReceiver,getReceiverbyid,updateUsersPut, deleteMessage } = require('../models/users');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const {v4: uuidv4 } = require('uuid')
 
 
 const users = {
@@ -15,6 +16,7 @@ const users = {
       bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(password, salt, function(err, hash) {
           const data = {
+            id: uuidv4(),
             name: '-',
             username,
             email,
@@ -70,13 +72,15 @@ const users = {
   },
   getFriends: (req, res, next) => {
     const id = req.params.id
-    getUsers(id)
+    const username = req.query.username || '' // SEARCH
+    getUsers(id, username)
     .then(result => {
       const resultUsers = result
       if (resultUsers.length === 0) {
-        const error = new Error('id not found')
-        error.status = 404
-        return next(error)
+        // const error = new Error('id not found')
+        // error.status = 404
+        // return next(error)
+        return helpers.response(res, [], 200, null)
       }
       helpers.response(res, resultUsers, 200, null)
     })
@@ -153,6 +157,7 @@ const users = {
       const oldImage = dataResults.image
       console.log('cobacoba')
       console.log(dataResults.image)
+      // const defaultImage = `${process.env.BASE_URL}/image/user.png`
       if(oldImage){
         const replaceFileName = oldImage.replace(`${process.env.BASE_URL}/upload/`, '')
         console.log(replaceFileName)
