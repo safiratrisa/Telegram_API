@@ -48,8 +48,6 @@ SECRET_KEY=[jwt_secret_key]
 ```
 
 ## End Point
-
-**1. USERS INFORMATION**
   * **POST** `/users/register`
   * **POST** `/users/login`
   * **PUT** `/users/updatelocation/:id`
