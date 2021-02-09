@@ -62,4 +62,4 @@ SECRET_KEY=[jwt_secret_key]
 
 ## Related Project
 
-- [`Frontend-Telegram`](https://github.com/safiratrisa/Telegram-Vue)
+- [`Frontend-Telegram`](https://github.com/safiratrisa/Telegram_Vue)
